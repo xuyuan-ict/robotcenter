@@ -1,0 +1,1 @@
+./bin/avalon-test-framework.sh 127.0.0.1:5050 50

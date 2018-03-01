@@ -1,0 +1,1 @@
+./bin/avalon-master.sh --ip=192.168.100.100 --work_dir=/var/lib/avalon

@@ -1,0 +1,12 @@
+cpus                    8
+mem                     1024
+disk                    10240
+threedcamera            2
+arm                     2
+hand                    2
+wheel                   4
+foot                    2
+distance_sensor         1
+acceleration_sensor     1
+imu                     1
+light_sensor            1

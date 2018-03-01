@@ -1,0 +1,121 @@
+import sys
+
+try:
+  import setuptools as distutils
+except ImportError:
+  print 'Could not find setuptools, bailing.'
+  sys.exit(1)
+
+import errno
+import glob
+import os
+import shutil
+
+from distutils.core import setup, Extension
+
+abs_top_srcdir = '@abs_top_srcdir@'
+abs_top_builddir = '@abs_top_builddir@'
+
+src_python_dist = os.path.join('src', 'python', 'dist')
+src_python_native = os.path.join('src', 'python', 'native')
+
+protobuf = os.path.join('third_party', 'protobuf-2.4.1')
+glog = os.path.join('third_party', 'glog-0.3.1')
+leveldb = os.path.join('third_party', 'leveldb')
+zookeeper = os.path.join('third_party', 'zookeeper-3.3.4', 'src', 'c')
+libprocess = os.path.join('third_party', 'libprocess')
+
+# Even though a statically compiled libprocess should include libev and
+# gperftools, before installation this isn't the case, so while a libtool
+# managed build will correctly pull in these libraries when building the
+# final result, we need to explicitly include them here
+# (or more precisely, down where we actually include libev.a and libprofiler.a).
+libev = os.path.join(libprocess, 'third_party', 'libev-3.8')
+gperftools = os.path.join(libprocess, 'third_party', 'gperftools-2.0')
+
+# We need to execute from the same directory as this script.
+os.chdir(os.path.abspath(os.path.dirname(__file__)))
+
+# Copy the native source files if we are building in a remote build
+# directory. This is necessary because the sources list must be
+# relative to the directory where this script resides.
+# $ cp -rf abs_top_srcdir/native abs_top_builddir/native
+if os.path.abspath(abs_top_srcdir) != os.path.abspath(abs_top_builddir):
+  try:
+    shutil.rmtree(os.path.join(abs_top_builddir, src_python_native), ignore_errors=True)
+    shutil.copytree(os.path.join(abs_top_srcdir, src_python_native),
+                    os.path.join(abs_top_builddir, src_python_native))
+  except OSError, e:
+    if e.errno != errno.EEXIST:
+      raise
+
+
+# Build the list of source files. Note that each source must be
+# relative to our current directory (where this script lives).
+SOURCES = [
+  os.path.join('native', file)
+    for file in os.listdir(os.path.join(abs_top_srcdir, src_python_native))
+      if file.endswith('.cpp')
+]
+
+INCLUDE_DIRS = [
+   os.path.join(abs_top_srcdir, 'include'),
+   os.path.join(abs_top_builddir, 'include'),
+   os.path.join(abs_top_builddir, 'src'),
+   os.path.join(abs_top_builddir, src_python_native),
+   os.path.join(abs_top_builddir, 'third_party', 'protobuf-2.4.1', 'src'),
+]
+
+LIBRARY_DIRS = []
+
+EXTRA_OBJECTS = [
+  os.path.join(abs_top_builddir, 'src', '.libs', 'libmesos_no_third_party.a'),
+  os.path.join(abs_top_builddir, protobuf, 'src', '.libs', 'libprotobuf.a'),
+  os.path.join(abs_top_builddir, glog, '.libs', 'libglog.a'),
+  os.path.join(abs_top_builddir, leveldb, 'libleveldb.a'),
+  os.path.join(abs_top_builddir, zookeeper, '.libs', 'libzookeeper_mt.a'),
+  os.path.join(abs_top_builddir, libprocess, '.libs', 'libprocess.a'),
+  os.path.join(abs_top_builddir, libev, '.libs', 'libev.a'),
+]
+
+# For gperftools, we need to check for the presence of libprofiler.a, since
+# it is possible to disable perftools inside libprocess.
+libprofiler = os.path.join(
+    abs_top_builddir, gperftools, '.libs', 'libprofiler.a')
+
+if os.path.exists(libprofiler):
+  EXTRA_OBJECTS.append(libprofiler)
+
+EXTRA_LINK_ARGS = []
+
+# Add any libraries from LIBS.
+if 'LIBS' in os.environ:
+  for library in os.environ['LIBS'].split():
+    EXTRA_LINK_ARGS.append(library)
+
+DEPENDS = [
+  os.path.join(abs_top_srcdir, 'src', 'python', source)
+    for source in SOURCES
+]
+
+# Note that we add EXTRA_OBJECTS to our dependency list to make sure
+# that we rebuild this module when one of them changes (e.g.,
+# libprocess).
+mesos_module = \
+  Extension('_mesos',
+            sources = SOURCES,
+            include_dirs = INCLUDE_DIRS,
+            library_dirs = LIBRARY_DIRS,
+            extra_objects = EXTRA_OBJECTS,
+            extra_link_args = EXTRA_LINK_ARGS,
+            depends = EXTRA_OBJECTS,
+            language = 'c++',
+            )
+
+setup(name = 'mesos',
+      version = '@PACKAGE_VERSION@',
+      description = 'Mesos',
+      package_dir = { '': 'src' },
+      packages = ['.'],
+      install_requires = ['protobuf>=2.4.1'],
+      ext_modules = [mesos_module])

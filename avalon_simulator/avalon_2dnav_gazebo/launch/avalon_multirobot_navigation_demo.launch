@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+    <arg name="world"       default="simple_office_with_people"/>  <!-- pal office, ... (see ../worlds) -->
+    <arg name="gui"         default="true"/>
+    <arg name="debug"       default="false"/>
+    <arg name="public_sim"  default="true"/>
+    <arg name="map"         default="$(find avalon_gazebo)/config/map"/>
+
+    <arg name="world_file"       default=" $(find avalon_stage)/maps/stage/small_office.world"/>  <!-- $(env TURTLEBOT_STAGE_WORLD_FILE) -->
+    <arg name="map_file"         default=" $(find avalon_stage)/maps/small_office/map.yaml"/>  <!--  $(env TURTLEBOT_STAGE_MAP_FILE) -->
+
+    <env name="GAZEBO_MODEL_PATH" value="$(find avalon_gazebo)/models:$(optenv GAZEBO_MODEL_PATH)"/>
+
+    <env name="LC_NUMERIC" value="C" />
+
+    <!-- Gazebo start
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="world_name" value="$(find avalon_gazebo)/worlds/$(arg world).world"/>
+        <arg name="gui" value="$(arg gui)"/>
+        <arg name="debug" value="$(arg debug)"/>
+    </include> -->
+
+    <!-- rviz start -->
+    <node pkg="stage_ros" type="stageros" name="stageros" args="$(arg world_file)">
+        <param name="base_watchdog_timeout" value="0.5"/>
+        <remap from="odom" to="odom"/>
+        <remap from="base_pose_ground_truth" to="base_pose_ground_truth"/>
+        <remap from="cmd_vel" to="mobile_base/commands/velocity"/>
+        <remap from="base_scan" to="scan"/>
+    </node>
+
+    <!-- Add first turtlebot -->
+    <include file="$(find avalon_2dnav_gazebo)/launch/launch_turtlebot_navigation.launch">
+        <arg name="robot_name" value="turtlebot1"/>
+        <arg name="x_pose" value="1.4"/>
+        <arg name="y_pose" value="-0.7"/>
+        <arg name="public_sim" value="$(arg public_sim)"/>
+        <arg name="map" value="$(arg map)"/>
+        <arg name="map_file" value="$(arg map_file)"/>
+    </include>
+
+    <!-- Add second turtlebot -->
+    <include file="$(find avalon_2dnav_gazebo)/launch/launch_turtlebot_navigation.launch">
+        <arg name="robot_name" value="turtlebot2"/>
+        <arg name="x_pose" value="1.4"/>
+        <arg name="y_pose" value="0.7"/>
+        <arg name="public_sim" value="$(arg public_sim)"/>
+        <arg name="map" value="$(arg map)"/>
+    </include>
+
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find avalon_2dnav_gazebo)/config/rviz/multi_robot.rviz"/>  <!-- robot_navigation, multi_robot -->
+
+</launch>

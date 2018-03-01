@@ -1,0 +1,454 @@
+/**
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package avalon;
+
+option java_package = "org.apache.avalon";
+option java_outer_classname = "Protos";
+
+
+enum Status {
+  DRIVER_NOT_STARTED = 1;
+  DRIVER_RUNNING = 2;
+  DRIVER_ABORTED = 3;
+  DRIVER_STOPPED = 4;
+}
+
+
+message FrameworkID {
+  required string value = 1;
+}
+
+
+message SlaveID {
+  required string value = 1;
+}
+
+
+message OfferID {
+  required string value = 1;
+}
+
+
+message TaskID {
+  required string value = 1;
+}
+
+
+message ActionID {
+  required string value = 1;
+}
+
+
+message ExecutorID {
+  required string value = 1;
+}
+
+
+message ExecutorInfo {
+  required ExecutorID executor_id = 1;
+  optional FrameworkID framework_id = 8; 
+  required CommandInfo command = 7;
+  repeated Resource resources = 5;
+  optional string name = 9;
+  optional string source = 10;
+  optional bytes data = 4;
+}
+
+
+/**
+ * Describes a command, executed via: '/bin/sh -c value'. Any uri's
+ * specified are fetched before executing the command.
+ * If executable field for an uri is set, executable file permission 
+ * is set on the downloaded file. Also, if the downloaded file has ".tgz" 
+ * extension it is extracted into the executor's working directory.
+ * In addition, any environment variables are set before executing 
+ * the command (so they can be used to "parameterize" your command).
+ */
+message CommandInfo {
+  message URI {
+    required string value = 1;
+    optional bool executable = 2;
+  }
+
+  repeated URI uris = 1;
+  optional Environment environment = 2;
+  required string value = 3;
+}
+
+
+/**
+ * Describes a master. This will probably have more fields in the
+ * future which might be used, for example, to link a framework webui
+ * to a master webui.
+ */
+message MasterInfo {
+  required string id = 1;
+  required uint32 ip = 2;
+  required uint32 port = 3;
+}
+
+
+message FrameworkInfo {
+  required string user = 1;
+  required string name = 2;
+  optional FrameworkID id = 3;
+  optional Position position = 4;
+  optional uint32 range = 5;
+  optional double failover_timeout = 6 [default = 0.0];
+}
+
+
+/**
+ * Describes a slave. The 'webui_hostname' and 'webui_port' are
+ * provided in the event a host has different private and public
+ * hostnames (e.g., Amazon EC2). Note that the 'id' field is only
+ * available after a slave is registered with the master, and is made
+ * available here to facilitate re-registration.
+ */
+message SlaveInfo {
+  required string hostname = 1;
+  // TODO(benh,andyk): Send bound ports, not just hostname.
+  required string robotname = 2;             // Deprecated!
+  optional int32 webui_port = 6 [default = 8081]; // Deprecated!
+  repeated Resource cRes = 3;
+  repeated Resource dRes = 4;
+  repeated Resource aRes = 5;
+  repeated Attribute attributes = 7;
+  optional SlaveID id = 8;
+  required string type = 9;
+  required Pose pose = 10;
+}
+
+
+/**
+ * Describes an Attribute or Resource "value". A value is described
+ * using the standard protocol buffer "union" trick.
+ */
+message Value {
+  enum Type {
+    SCALAR = 0;
+    RANGES = 1;
+    SET = 2;
+    TEXT = 3;
+  }
+
+  message Scalar {
+    required double value = 1;
+  }
+
+  message Range {
+    required uint64 begin = 1;
+    required uint64 end = 2;
+  }
+
+  message Ranges {
+    repeated Range range = 1;
+  }
+
+  message Set {
+    repeated string item = 1;
+  }
+
+  message Text {
+    required string value = 1;
+  }
+
+  required Type type = 1;
+  optional Scalar scalar = 2;
+  optional Ranges ranges = 3;
+  optional Set set = 4;
+  optional Text text = 5;
+}
+
+
+/**
+ * Describes an attribute that can be set on a machine. For now,
+ * attributes and resources share the same "value" type, but this may
+ * change in the future and attributes may only be string based.
+ */
+message Attribute {
+  required string name = 1;
+  required Value.Type type = 2;
+  optional Value.Scalar scalar = 3;
+  optional Value.Ranges ranges = 4;
+  optional Value.Set set = 6;
+  optional Value.Text text = 5;
+}
+
+/**
+ * Describes resource type.
+ */
+enum ResourceTypes {
+  CRES = 0;
+  DRES = 1;
+  ARES = 2;
+}
+
+
+/**
+ * Describes a resource on a machine. A resource can take on one of
+ * three types: scalar (double), a list of finite and discrete ranges
+ * (e.g., [1-10, 20-30]), or a set of items. A resource is described
+ * using the standard protocol buffer "union" trick.
+ *
+ * TODO(benh): Add better support for "expected" resources (e.g.,
+ * cpus, memory, disk, network).
+ */
+message Resource {
+  required string name = 1;
+  required Value.Type type = 2;
+  optional Value.Scalar scalar = 3;
+  optional Value.Ranges ranges = 4;
+  optional Value.Set set = 5;
+  optional ResourceTypes rtype = 6;
+}
+
+
+/*
+ * A snapshot of resource usage statistics.
+ */
+message ResourceStatistics {
+  required double timestamp = 1; // Snapshot time, in seconds since the Epoch.
+
+  // CPU Usage Information:
+  // A percentage based cpu usage rate since the last snapshot.
+  // This is akin to what the 'top' program shows.
+  optional double cpu_usage = 2;
+  // Total CPU time spent in user mode, and kernel mode.
+  optional double cpu_user_time = 3;   // In seconds.
+  optional double cpu_system_time = 4; // In seconds.
+
+  // Memory Usage Information:
+  optional uint64 memory_rss = 5; // Resident Set Size (in bytes).
+
+  // TODO(bmahler): Add disk usage.
+  // TODO(bmahler): Add network usage?
+}
+
+
+/**
+ * Describes a snapshot of the resource usage for an executor.
+ *
+ * TODO(bmahler): Note that we want to be sending this information
+ * to the master, and subsequently to the relevant scheduler. So
+ * this proto is designed to be easy for the scheduler to use, this
+ * is why we provide the slave id, executor info / task info.
+ */
+message ResourceUsage {
+  required SlaveID slave_id = 1;
+  required FrameworkID framework_id = 2;
+
+  // Resource usage is for an executor. For tasks launched with
+  // an explicit executor, the executor id is provided. For tasks
+  // launched without an executor, our internal executor will be
+  // used. In this case, we provide the task id here instead, in
+  // order to make this message easier for schedulers to work with.
+
+  optional ExecutorID executor_id = 3; // If present, this executor was
+  optional string executor_name = 4;   // explicitly specified.
+
+  //optional TaskID task_id = 5; // If present, the task did not have an executor.
+
+  // If missing, the isolation module cannot provide resource usage.
+  optional ResourceStatistics statistics = 6;
+}
+
+
+/**
+ * Describes a request for resources that can be used by a framework
+ * to proactively influence the allocator.  If 'slave_id' is provided
+ * then this request is assumed to only apply to resources on that
+ * slave.
+ */
+message Request {
+  optional SlaveID slave_id = 1;
+  repeated Resource resources = 2;
+}
+
+
+message Offer {
+  required OfferID id = 1;
+  required FrameworkID framework_id = 2;
+  required SlaveID slave_id = 3;
+  required string hostname = 4;
+  repeated Resource resources = 5;
+  repeated Attribute attributes = 7;
+  repeated ExecutorID executor_ids = 6;
+  required string type = 8;
+  required Pose pose = 9;
+  required string robot_name = 10;
+}
+
+
+message TaskInfo {
+  required string name = 1;
+  required TaskID task_id = 2;
+  required SlaveID slave_id = 3;
+  repeated Resource resources = 4;
+  optional ExecutorInfo executor = 5;
+  optional CommandInfo command = 7;
+  optional bytes data = 6;
+  required string robot_name = 8;
+}
+
+
+enum TaskState {
+  TASK_STAGING = 6;  // Initial state. Framework status updates should not use.
+  TASK_STARTING = 0;
+  TASK_RUNNING = 1;
+  TASK_FINISHED = 2; // TERMINAL.
+  TASK_FAILED = 3;   // TERMINAL.
+  TASK_KILLED = 4;   // TERMINAL.
+  TASK_LOST = 5;     // TERMINAL.
+}
+
+
+message TaskStatus {
+  required TaskID task_id = 1;
+  required TaskState state = 2;
+  optional RobotStatus robot_status = 5; //Added by @Ailias
+  optional string message = 4; // Possible message explaining state.
+  optional bytes data = 3;
+}
+
+
+message ActionInfo {
+  required string name = 1;
+  required ActionID action_id = 2;
+  required SlaveID slave_id = 3;
+  optional CommandInfo command = 4;
+  optional bytes data = 5;
+}
+
+
+enum ActionState {
+  ACTION_STARTING = 0;
+  ACTION_RUNNING = 1;
+  ACTION_FINISHED = 2;
+  ACTION_FAILED = 3;
+  ACTION_KILLED = 4;
+  ACTION_LOST = 5;
+}
+
+
+message ActionStatus {
+  required ActionID action_id = 1;
+  required ActionState state = 2;
+  optional string message = 3;
+  optional bytes data = 4;
+}
+
+
+/**
+* Describes a collection of environment variables. This is used with
+* CommandInfo in order to set environment variables before running a
+* command.
+*/
+message Environment {
+  message Variable {
+    required string name = 1;
+    required string value = 2;
+  }
+
+  repeated Variable variables = 1;
+}
+
+
+/**
+ * A generic (key, value) pair used in various places for parameters.
+ */
+message Parameter {
+  required string key = 1;
+  required string value = 2;
+}
+ 
+ 
+/**
+ * Collection of Parameter.
+ */
+message Parameters {
+  repeated Parameter parameter = 1;
+}
+
+
+
+/**
+ * Describe a collection of robots status variables.
+ */
+message Position{
+  required double x = 1;
+  required double y = 2;
+  required double z = 3;
+}
+
+
+message Orientation{
+  required double x = 1;
+  required double y = 2;
+  required double z = 3;
+  required double w = 4;
+}
+
+
+message Pose{
+  required Position position = 1;
+  required Orientation orientation = 2;
+}
+
+
+message Linear{
+  required double x = 1;
+  required double y = 2;
+  required double z = 3;
+}
+
+
+message Angular{
+  required double x = 1;
+  required double y = 2;
+  required double z = 3;
+}
+
+
+message Twist{
+  required Linear linear = 1;
+  required Angular angular = 2;
+}
+
+
+message RobotStatus{
+  required string robot_name = 1;
+  required Pose pose = 2;
+  required Twist twist = 3;
+}
+
+
+/**
+ * Describes possible filters that can be applied to unused resources
+ * (see SchedulerDriver::launchTasks) to influence the allocator.
+ */
+message Filters {
+  // Time to consider unused resources refused. Note that all unused
+  // resources will be considered refused and use the default value
+  // (below) regardless of whether Filters was passed to
+  // SchedulerDriver::launchTasks. You MUST pass Filters with this
+  // field set to change this behavior (i.e., get another offer which
+  // includes unused resources sooner or later than the default).
+  optional double refuse_seconds = 1 [default = 5.0];
+}

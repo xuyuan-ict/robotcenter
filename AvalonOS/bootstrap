@@ -1,0 +1,17 @@
+autoreconf --install
+rm -rf third_party
+tar -xf third_party.tar
+rm -rf build
+mkdir -p build/ros_ws
+cp script/robot.res build/
+cp script/ros-rtloc build/
+cp script/ros-fwloc build/
+cp script/ros-fwloc-tmp build/
+cp script/master build/
+cp script/slave1 build/
+cp script/slave2 build/
+cp script/slave3 build/
+cp script/test-framework build/
+cp script/container.conf build/
+cp script/container-ip build/
+ln -rs ros/src build/ros_ws/src

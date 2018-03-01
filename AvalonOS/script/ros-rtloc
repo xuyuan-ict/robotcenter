@@ -1,0 +1,1 @@
+rostopic echo -n 1 --noarr  /$1 | grep -n '[0-9]\.[0-9]*' | awk '{print $3}' > robot.loc

@@ -1,0 +1,1 @@
+rosservice call gazebo/get_model_state '{model_name: '$1' }' | awk '{print $2}' | awk 'NF' > robot.loc 

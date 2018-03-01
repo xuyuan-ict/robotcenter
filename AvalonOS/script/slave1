@@ -1,0 +1,6 @@
+./bin/avalon-slave.sh --master=127.0.0.1:5050 --ip=127.0.0.1 \
+--work_dir=/var/lib/avalon --robot_name=turtlebot1 \
+--odom=odom --type=agv --transform=-1.4,-0.7,0 \
+--data-driven_resources="kinect:{ImageGen};kinect:{LaserGen};gps:{GpsGen}" \
+--action_resources="wheel:{Move};hands:{Grasp}" \
+--isolation=process

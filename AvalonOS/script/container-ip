@@ -1,0 +1,1 @@
+lxc-ls -f | grep $1 | awk '{print $5}' > container.ip

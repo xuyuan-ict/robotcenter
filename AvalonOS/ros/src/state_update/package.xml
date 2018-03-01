@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package>
+  <name>state_update</name>
+  <version>0.0.1</version>
+  <description>The state_update package</description>
+
+  <maintainer email="xuyuan@ict.ac.cn">Yuan Xu</maintainer>
+  <license>BSD</license>
+  <maintainer email="xuyuan@ict.ac.cn">Yuan Xu</maintainer>
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>roscpp</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>nav_msgs</build_depend>
+
+</package>

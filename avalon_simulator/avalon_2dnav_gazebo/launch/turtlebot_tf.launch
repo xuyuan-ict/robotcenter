@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+    <arg name="robot_name"/>
+
+    <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg robot_name)_base_footprint" args="0 0 0 0 0 0 1 base_footprint $(arg robot_name)/base_footprint 200"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg robot_name)_base_link" args="0 0 0 0 0 0 1 base_link $(arg robot_name)/base_link 200"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg robot_name)_camera_depth_frame" args="0 0 0 0 0 0 1 camera_depth_frame $(arg robot_name)/camera_depth_frame 200"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg robot_name)_camera_depth_optical_frame" args="0 0 0 0 0 0 1 camera_depth_optical_frame $(arg robot_name)/camera_depth_optical_frame 200"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg robot_name)_camera_link" args="0 0 0 0 0 0 1 camera_link $(arg robot_name)/camera_link 200"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg robot_name)_camera_rgb_frame" args="0 0 0 0 0 0 1 camera_rgb_frame $(arg robot_name)/camera_rgb_frame 200"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg robot_name)_camera_rgb_optical_frame" args="0 0 0 0 0 0 1 camera_rgb_optical_frame $(arg robot_name)/camera_rgb_optical_frame 200"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg robot_name)_caster_back_link" args="0 0 0 0 0 0 1 caster_back_link $(arg robot_name)/caster_back_link 200"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg robot_name)_caster_front_link" args="0 0 0 0 0 0 1 caster_front_link $(arg robot_name)/caster_front_link 200"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg robot_name)_cliff_sensor_front_link" args="0 0 0 0 0 0 1 cliff_sensor_front_link $(arg robot_name)/cliff_sensor_front_link 200"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg robot_name)_cliff_sensor_left_link" args="0 0 0 0 0 0 1 cliff_sensor_left_link $(arg robot_name)/cliff_sensor_left_link 200"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg robot_name)_cliff_sensor_right_link" args="0 0 0 0 0 0 1 cliff_sensor_right_link $(arg robot_name)/cliff_sensor_right_link 200"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg robot_name)_gyro_link" args="0 0 0 0 0 0 1 gyro_link $(arg robot_name)/gyro_link 200"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg robot_name)_mount_asus_xtion_pro_link" args="0 0 0 0 0 0 1 mount_asus_xtion_pro_link $(arg robot_name)/mount_asus_xtion_pro_link 200"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg robot_name)_plate_bottom_link" args="0 0 0 0 0 0 1 plate_bottom_link $(arg robot_name)/plate_bottom_link 200"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg robot_name)_plate_middle_link" args="0 0 0 0 0 0 1 plate_middle_link $(arg robot_name)/plate_middle_link 200"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg robot_name)_plate_top_link" args="0 0 0 0 0 0 1 plate_top_link $(arg robot_name)/plate_top_link 200"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg robot_name)_pole_bottom_0_link" args="0 0 0 0 0 0 1 pole_bottom_0_link $(arg robot_name)/pole_bottom_0_link 200"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg robot_name)_pole_bottom_1_link" args="0 0 0 0 0 0 1 pole_bottom_1_link $(arg robot_name)/pole_bottom_1_link 200"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg robot_name)_pole_bottom_2_link" args="0 0 0 0 0 0 1 pole_bottom_2_link $(arg robot_name)/pole_bottom_2_link 200"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg robot_name)_pole_bottom_3_link" args="0 0 0 0 0 0 1 pole_bottom_3_link $(arg robot_name)/pole_bottom_3_link 200"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg robot_name)_pole_bottom_4_link" args="0 0 0 0 0 0 1 pole_bottom_4_link $(arg robot_name)/pole_bottom_4_link 200"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg robot_name)_pole_bottom_5_link" args="0 0 0 0 0 0 1 pole_bottom_5_link $(arg robot_name)/pole_bottom_5_link 200"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg robot_name)_pole_kinect_0_link" args="0 0 0 0 0 0 1 pole_kinect_0_link $(arg robot_name)/pole_kinect_0_link 200"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg robot_name)_pole_kinect_1_link" args="0 0 0 0 0 0 1 pole_kinect_1_link $(arg robot_name)/pole_kinect_1_link 200"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg robot_name)_pole_middle_0_link" args="0 0 0 0 0 0 1 pole_middle_0_link $(arg robot_name)/pole_middle_0_link 200"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg robot_name)_pole_middle_1_link" args="0 0 0 0 0 0 1 pole_middle_1_link $(arg robot_name)/pole_middle_1_link 200"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg robot_name)_pole_middle_2_link" args="0 0 0 0 0 0 1 pole_middle_2_link $(arg robot_name)/pole_middle_2_link 200"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg robot_name)_pole_middle_3_link" args="0 0 0 0 0 0 1 pole_middle_3_link $(arg robot_name)/pole_middle_3_link 200"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg robot_name)_pole_top_0_link" args="0 0 0 0 0 0 1 pole_top_0_link $(arg robot_name)/pole_top_0_link 200"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg robot_name)_pole_top_1_link" args="0 0 0 0 0 0 1 pole_top_1_link $(arg robot_name)/pole_top_1_link 200"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg robot_name)_pole_top_2_link" args="0 0 0 0 0 0 1 pole_top_2_link $(arg robot_name)/pole_top_2_link 200"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg robot_name)_pole_top_3_link" args="0 0 0 0 0 0 1 pole_top_3_link $(arg robot_name)/pole_top_3_link 200"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg robot_name)_wheel_left_link" args="0 0 0 0 0 0 1 wheel_left_link $(arg robot_name)/wheel_left_link 200"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg robot_name)_wheel_right_link" args="0 0 0 0 0 0 1 wheel_right_link $(arg robot_name)/wheel_right_link 200"/>
+    <node pkg="tf" type="static_transform_publisher" name="base_to_$(arg robot_name)_odom" args="0 0 0 0 0 0 1 odom $(arg robot_name)/odom 200"/>
+    <node pkg="tf" type="static_transform_publisher" name="$(arg robot_name)_bc" args="0 0 0 0 0 0 1 base_link /map 100"/>
+
+</launch>

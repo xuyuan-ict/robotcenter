@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<package>
+  <name>avalon_2dnav_gazebo</name>
+  <version>0.0.1</version>
+  <description>The avalon_2dnav_gazebo package</description>
+
+  <maintainer email="xuyuan@ict.ac.cn">Yuan Xu</maintainer>
+  <license>Modified BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>avalon_gazebo</run_depend>
+  <run_depend>avalon_stage</run_depend>
+</package>

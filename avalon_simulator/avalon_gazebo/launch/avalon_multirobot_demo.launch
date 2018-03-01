@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+    <arg name="world"       default="playground"/>  <!-- pal office, ... (see ../worlds) -->
+    <arg name="gui"         default="true"/>
+    <arg name="debug"       default="false"/>
+
+    <!-- Gazebo start -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="world_name" value="$(find avalon_gazebo)/worlds/$(arg world).world"/>
+        <arg name="use_sim_time" value="true"/> 
+        <arg name="gui" value="$(arg gui)"/>
+        <arg name="debug" value="$(arg debug)"/>
+    </include>
+
+    <!-- Add first turtlebot -->
+    <include file="$(find avalon_gazebo)/launch/launch_turtlebot.launch">
+        <arg name="robot_name" value="turtlebot1"/>
+        <arg name="x_pose" value="-1.4"/>
+        <arg name="y_pose" value="-0.7"/>
+    </include>
+
+    <!-- Add second turtlebot -->
+    <include file="$(find avalon_gazebo)/launch/launch_turtlebot.launch">
+        <arg name="robot_name" value="turtlebot2"/>
+        <arg name="x_pose" value="1.4"/>
+        <arg name="y_pose" value="0.7"/>
+    </include> 
+
+    <!-- Add first uav -->
+    <include file="$(find avalon_gazebo)/launch/launch_uav.launch">
+        <arg name="robot_name" value="uav1"/>
+        <arg name="x_pose" value="0"/>
+        <arg name="y_pose" value="-4.5"/>
+    </include>
+
+</launch>
